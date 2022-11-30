@@ -1,6 +1,10 @@
 const express = require('express');
 const {
-    getDatabases, getDatabase, createDatabase, updateDatabase, deleteDatabase
+    getDatabases, 
+    getDatabase, 
+    createDatabase, 
+    updateDatabase, 
+    deleteDatabase
 } = require('../controllers/databases');
 const { protect } = require('../middleware/auth');
 
