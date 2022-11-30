@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
@@ -15,10 +16,12 @@ const auth = require('./routes/auth');
 
 const app = express();
 app.use(express.json()); //Body parser
-app.use(errorHandler);
+app.use(cookieParser()); //Cookie parser
 
 //Bind routes
 app.use('/api/v1/auth', auth);
+
+app.use(errorHandler); //error handler middleware
 
 //Run Server
 const PORT = process.env.PORT || 5001;
