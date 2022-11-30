@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 
 const connectDB = require('./config/db');
+const errorHandler = require('./middleware/error');
 
 //Load env file
 dotenv.config({path: './config/config.env'});
@@ -9,9 +10,15 @@ dotenv.config({path: './config/config.env'});
 //Connect to DB
 connectDB();
 
+//Routers
+const auth = require('./routes/auth');
 
 const app = express();
 app.use(express.json()); //Body parser
+app.use(errorHandler);
+
+//Bind routes
+app.use('/api/v1/auth', auth);
 
 //Run Server
 const PORT = process.env.PORT || 5001;
