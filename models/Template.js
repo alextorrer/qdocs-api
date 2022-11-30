@@ -11,8 +11,7 @@ const TemplateModel = new mongoose.Schema({
         required: true
     },
     file:{
-        type: String,
-        required: [true, 'La plantilla necesita un documento asociado']
+        type: String
     },
     createdAt:{
         type: Date,
