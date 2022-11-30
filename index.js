@@ -15,6 +15,7 @@ connectDB();
 const auth = require('./routes/auth');
 const databases = require('./routes/databases');
 const dictionaries = require('./routes/dictionaries');
+const entries = require('./routes/entries');
 
 const app = express();
 app.use(express.json()); //Body parser
@@ -24,6 +25,7 @@ app.use(cookieParser()); //Cookie parser
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/databases', databases);
 app.use('/api/v1/dictionaries', dictionaries);
+app.use('/api/v1/entries', entries);
 
 app.use(errorHandler); //error handler middleware
 
