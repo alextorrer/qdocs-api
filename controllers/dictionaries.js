@@ -18,7 +18,7 @@ exports.getDictionaries = asyncHandler(async (req, res, next)=>{
 //@route        Get /api/v1/dictionaries/:id
 //@access       Private
 exports.getDictionary = asyncHandler(async (req, res, next)=>{
-    const dictionary = await Dictionary.findById(req.params.id);
+    const dictionary = await Dictionary.findById(req.params.id).populate('entries');
 
     if(!dictionary){
         return next(new ErrorResponse(`Dictionary not found with id ${req.params.id}`, 404));
