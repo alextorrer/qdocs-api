@@ -17,7 +17,7 @@ const DatabaseSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Se necesita la contraseña']
     },
-    password: {
+    table: {
         type: String,
         required: [true, 'Se necesita especificar una tabla']
     },

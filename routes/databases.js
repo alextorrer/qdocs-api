@@ -4,7 +4,8 @@ const {
     getDatabase, 
     createDatabase, 
     updateDatabase, 
-    deleteDatabase
+    deleteDatabase,
+    getRecords
 } = require('../controllers/databases');
 const { protect } = require('../middleware/auth');
 
@@ -20,5 +21,7 @@ router
     .get(protect, getDatabase)
     .put(protect, updateDatabase)
     .delete(protect, deleteDatabase)
+
+router.route('/:id/records').get(protect, getRecords);
 
 module.exports = router;
