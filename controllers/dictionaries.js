@@ -6,7 +6,7 @@ const ErrorResponse = require('../util/errorResponse');
 //@route        Get /api/v1/dictionaries
 //@access       Private
 exports.getDictionaries = asyncHandler(async (req, res, next)=>{
-    const dictionaries = await Dictionary.find();
+    const dictionaries = await Dictionary.find().populate('entries');
 
     res.status(200).json({
         success: true,
