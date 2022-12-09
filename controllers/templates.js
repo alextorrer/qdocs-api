@@ -117,3 +117,18 @@ exports.deleteTemplate = asyncHandler(async (req, res, next)=>{
     });
 });
 
+//@desc         Get Template File
+//@route        GET /api/v1/templates/file/:id
+//@access       Private
+exports.getFile = asyncHandler(async (req, res, next)=>{
+    const template = await Template.findById(req.params.id);
+
+    if(!template){
+        return next(new ErrorResponse(`Template not found with id ${req.params.id}`, 404));
+    }
+
+    res.sendFile(
+        path.resolve(`public/uploads/${template.file}`)
+    );
+});
+
