@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Docxtemplater = require('docxtemplater');
 const PizZip = require("pizzip");
+const docxConverter = require('docx-pdf');
 
 const Template = require('../models/Template');
 const Database = require('../models/Database');
@@ -174,9 +175,16 @@ exports.generateFile = asyncHandler(async (req, res, next)=>{
         compression: "DEFLATE",
     });
 
-    // buf is a nodejs Buffer, you can either write it to a
-    // file or res.send it with express for example.
-    fs.writeFileSync(path.resolve('public/generated', `document_${record._id}.docx`), buf);
-    res.sendFile(path.resolve('public/generated', `document_${record._id}.docx`));
+    const wordFilepath = path.resolve('public/generated', `document_${record._id}.docx`);
+    const pdfFilepath = path.resolve('public/generated', `document_${record._id}.pdf`);
+    fs.writeFileSync(wordFilepath, buf);
+
+    //Convert to pdf
+    docxConverter(wordFilepath, pdfFilepath, (err, result)=>{
+        if(err){
+            return next(new ErrorResponse(`Error while converting word to pdf`, 500));
+        }
+        res.sendFile(pdfFilepath);
+    });
 });
 
