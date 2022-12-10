@@ -5,7 +5,8 @@ const {
     createTemplate, 
     updateTemplate, 
     deleteTemplate,
-    getFile
+    getFile,
+    generateFile
 } = require('../controllers/templates');
 const { protect } = require('../middleware/auth');
 
@@ -23,5 +24,7 @@ router
     .delete(protect, deleteTemplate)
 
 router.route('/file/:id').get(protect, getFile);
+
+router.route('/:id/generate/:record').get(protect, generateFile);
 
 module.exports = router;

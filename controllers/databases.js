@@ -88,15 +88,7 @@ exports.getRecords = asyncHandler(async (req, res, next)=>{
         return next(new ErrorResponse(`Database not found with id ${req.params.id}`, 404));
     }
 
-    const conn = await mongoose.createConnection(buildURI(database), {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
-
-    const ClientSchema = new mongoose.Schema({}, { strict: false });
-    const ClientModel = conn.model('ClientModel', ClientSchema, database.table);
-
-    const records = await ClientModel.find();
+    const records = await this.getDatabaseRecords(database);
 
     res.status(200).json({
         success: true,
@@ -107,4 +99,19 @@ exports.getRecords = asyncHandler(async (req, res, next)=>{
 //Helper method to build mongoDB URI
 buildURI = function(db){
     return `mongodb+srv://${db.username}:${db.username}@${db.url}/${db.name}?retryWrites=true&w=majority`;
+}
+
+exports.getDatabaseRecords = async (database, id) => {
+    const conn = await mongoose.createConnection(buildURI(database), {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+
+    const ClientSchema = new mongoose.Schema({}, { strict: false });
+    const ClientModel = conn.model('ClientModel', ClientSchema, database.table);
+
+    if(id){
+        return ClientModel.findById(id);
+    }
+    return ClientModel.find();
 }

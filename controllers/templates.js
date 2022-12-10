@@ -1,10 +1,16 @@
-const Template = require('../models/Template');
-const asyncHandler = require('../middleware/async');
-const ErrorResponse = require('../util/errorResponse');
 const formidable = require('formidable');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
+const Docxtemplater = require('docxtemplater');
+const PizZip = require("pizzip");
+
+const Template = require('../models/Template');
+const Database = require('../models/Database');
+const {getDatabaseRecords} = require('./databases');
+const asyncHandler = require('../middleware/async');
+const ErrorResponse = require('../util/errorResponse');
+
 
 //@desc         Get Templates
 //@route        Get /api/v1/templates
@@ -50,7 +56,7 @@ exports.createTemplate = asyncHandler(async (req, res, next)=>{
             return next(new ErrorResponse('Please upload a file' ,400));
         }
 
-        if(!file.mimetype.includes('pdf')){
+        if(!file.mimetype.includes('word')){
             return next(new ErrorResponse("Please upload a PDF", 400));
         }
 
@@ -130,5 +136,47 @@ exports.getFile = asyncHandler(async (req, res, next)=>{
     res.sendFile(
         path.resolve(`public/uploads/${template.file}`)
     );
+});
+
+//@desc         Generate file and replace template
+//@route        GET /api/v1/templates/:id/generate/:record
+//@access       Private
+exports.generateFile = asyncHandler(async (req, res, next)=>{
+    const template = await Template.findById(req.params.id).populate('dictionary');
+    if(!template){
+        return next(new ErrorResponse(`Template not found with id ${req.params.id}`, 404));
+    }
+
+    const database = await Database.findById(template.dictionary.database);
+    if(!database){
+        return next(new ErrorResponse(`Database not found with id ${template.dictionary.database}`, 404));
+    }
+
+    const record = await getDatabaseRecords(database, req.params.record);
+
+    // Load the docx file as binary content
+    const content = fs.readFileSync(
+        path.resolve('public/uploads', template.file),
+        "binary"
+    );
+
+    const zip = new PizZip(content);
+    const doc = new Docxtemplater(zip, {
+        paragraphLoop: true,
+        linebreaks: true,
+    });
+
+    // Render the document (replacements)
+    doc.render(record);
+
+    const buf = doc.getZip().generate({
+        type: "nodebuffer",
+        compression: "DEFLATE",
+    });
+
+    // buf is a nodejs Buffer, you can either write it to a
+    // file or res.send it with express for example.
+    fs.writeFileSync(path.resolve('public/generated', `document_${record._id}.docx`), buf);
+    res.sendFile(path.resolve('public/generated', `document_${record._id}.docx`));
 });
 
