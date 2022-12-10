@@ -3,7 +3,7 @@ const asyncHandler = require('./async');
 const User = require('../models/User');
 const ErrorResponse = require('../util/errorResponse');
 
-//Protect routes
+//Use JWT to protect the routes
 exports.protect = asyncHandler(async (req, res, next) => {
     let token;
 

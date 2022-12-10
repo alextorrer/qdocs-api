@@ -24,6 +24,7 @@ app.use(express.json()); //Body parser
 app.use(cookieParser()); //Cookie parser
 //app.use(fileupload()); //File uploading
 
+//CORS
 const cors = require('cors');
 app.use(cors({
     origin: ['http://localhost:4200', 'http://127.0.0.1:4200'],
